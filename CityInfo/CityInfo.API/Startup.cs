@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace CityInfo.API
 {
@@ -19,14 +20,19 @@ namespace CityInfo.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc()
-                .AddJsonOptions(o =>
+                .AddMvcOptions( o =>
+                {
+                    o.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
+                    //o.OutputFormatters.Remove(new XmlDataContractSerializerOutputFormatter());
+                });
+               /* .AddJsonOptions(o =>
                 {
                     if (o.SerializerSettings.ContractResolver != null)
                     {
                         var castedResolver = o.SerializerSettings.ContractResolver as DefaultContractResolver;
                         castedResolver.NamingStrategy = null;
                     }
-                });
+                });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
