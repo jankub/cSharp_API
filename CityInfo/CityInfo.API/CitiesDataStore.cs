@@ -20,16 +20,16 @@ namespace CityInfo.API
                     Id = 1,
                     Name = "New York City",
                     Description = "Big city in USA",
-                    PointsOfInterest = new List<PointsOfInterestDto> ()
+                    PointsOfInterest = new List<PointOfInterestDto> ()
                     {
-                        new PointsOfInterestDto()
+                        new PointOfInterestDto()
                         {
                             Id = 1,
                             Name = "Central Park",
                             Description = "Park on Manhattan"
                         },
 
-                        new PointsOfInterestDto()
+                        new PointOfInterestDto()
                         {
                             Id = 2,
                             Name = "Empire State Building",
@@ -44,16 +44,16 @@ namespace CityInfo.API
                     Id = 2,
                     Name = "Antwerp",
                     Description = "City in Belgium",
-                    PointsOfInterest = new List<PointsOfInterestDto> ()
+                    PointsOfInterest = new List<PointOfInterestDto> ()
                     {
-                        new PointsOfInterestDto()
+                        new PointOfInterestDto()
                         {
                             Id = 3,
                             Name = "Cathedral",
                             Description = "Unfinished church"
                         },
 
-                        new PointsOfInterestDto()
+                        new PointOfInterestDto()
                         {
                             Id = 4,
                             Name = "Main square",
@@ -67,16 +67,16 @@ namespace CityInfo.API
                     Id = 3,
                     Name = "Paris",
                     Description = "With Eifell Tower",
-                    PointsOfInterest = new List<PointsOfInterestDto> ()
+                    PointsOfInterest = new List<PointOfInterestDto> ()
                     {
-                        new PointsOfInterestDto()
+                        new PointOfInterestDto()
                         {
                             Id = 5,
                             Name = "Eifell Tower",
                             Description = "Symbol of Paris"
                         },
 
-                        new PointsOfInterestDto()
+                        new PointOfInterestDto()
                         {
                             Id = 6,
                             Name = "Chanse Lisee",
