@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using CityInfo.API.Services;
+using CityInfo.API.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace CityInfo.API
 {
@@ -39,7 +41,14 @@ namespace CityInfo.API
 #else
             services.AddTransient<IMailService, CloudMailService>();
 #endif
+
+            string connectionString = @"Server=(localdb)\mssqllocaldb;Database=CityInfoDB;Trusted_Connection=True;";
+            services.AddDbContext<CityInfoContext>(o =>
+            {
+                o.UseSqlServer(connectionString);
+            });
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
