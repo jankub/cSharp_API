@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CityInfo.API.Entities;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -42,17 +43,46 @@ namespace CityInfo.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetCity(int id)
+        public IActionResult GetCity(int id, bool includePointsOfInterest = false)
         {
             //find city
-            var cityToReturn = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == id);
+            var city = _cityInfoRepository.GetCity(id, includePointsOfInterest);
 
-            if (cityToReturn == null)
+            if (city == null)
             {
                 return NotFound();
             }
 
-            return Ok(cityToReturn);
+            if (includePointsOfInterest)
+            {
+                var cityResult = new CityDto()
+                {
+                    Id = city.Id,
+                    Name = city.Name,
+                    Description = city.Description,
+                };
+
+                foreach (var pointOfInterest in city.PointsOfInterest)
+                {
+                    cityResult.PointsOfInterest.Add(new PointOfInterestDto()
+                    {
+                        Id = pointOfInterest.Id,
+                        Name = pointOfInterest.Name,
+                        Description = pointOfInterest.Description
+                    });
+                }
+
+                return Ok(cityResult);
+            }
+
+            var cityWithoutPointsOfInterest = new CityWithoutPointsOfInterestDto()
+            {
+                Id = city.Id,
+                Name = city.Name,
+                Description = city.Description
+            };
+
+            return Ok(cityWithoutPointsOfInterest);
 
         }
     }
