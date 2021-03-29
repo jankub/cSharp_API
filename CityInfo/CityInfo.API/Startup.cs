@@ -1,12 +1,12 @@
+using System;
+using CityInfo.API.Contexts;
+using CityInfo.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using CityInfo.API.Services;
-using CityInfo.API.Contexts;
-using Microsoft.EntityFrameworkCore;
 
 namespace CityInfo.API
 {
@@ -14,18 +14,19 @@ namespace CityInfo.API
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public IConfiguration Configuration { get; }
+
+        public IConfiguration _configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc()
-                .AddMvcOptions( o =>
-                {
-                    o.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
+                .AddMvcOptions(o =>
+               {
+                   o.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
                     //o.OutputFormatters.Remove(new XmlDataContractSerializerOutputFormatter());
                 });
             /* .AddJsonOptions(o =>
@@ -42,7 +43,7 @@ namespace CityInfo.API
             services.AddTransient<IMailService, CloudMailService>();
 #endif
 
-            string connectionString = @"Server=(localdb)\mssqllocaldb;Database=CityInfoDB;Trusted_Connection=True;";
+            string connectionString = _configuration["connectionStrings:cityInfoDBConnectionString"];
             services.AddDbContext<CityInfoContext>(o =>
             {
                 o.UseSqlServer(connectionString);

@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace CityInfo.API.Controllers
 {
@@ -30,4 +29,3 @@ namespace CityInfo.API.Controllers
         }
     }
 }
-  

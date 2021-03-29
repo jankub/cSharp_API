@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CityInfo.API.Models
 {
@@ -12,7 +9,7 @@ namespace CityInfo.API.Models
         public string Description { get; set; }
 
         public int NumberOfPointsOfInterest
-        { 
+        {
             get
             {
                 return PointsOfInterest.Count;

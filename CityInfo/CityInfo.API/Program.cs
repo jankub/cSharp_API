@@ -14,10 +14,10 @@ namespace CityInfo.API
         {
             var logger = NLogBuilder
                     .ConfigureNLog("nlog.config")
-                    .GetCurrentClassLogger();           
+                    .GetCurrentClassLogger();
 
             try
-            {              
+            {
                 logger.Info("Initializing application...");
                 var host = CreateWebHostBuilder(args).Build();
 
@@ -49,7 +49,7 @@ namespace CityInfo.API
                 NLog.LogManager.Shutdown();
             }
 
-            
+
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

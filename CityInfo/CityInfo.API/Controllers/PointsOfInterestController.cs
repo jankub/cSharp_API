@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using CityInfo.API.Models;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.Extensions.Logging;
 using CityInfo.API.Services;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace CityInfo.API.Controllers
 {
@@ -22,7 +20,7 @@ namespace CityInfo.API.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _mailService = mailService ?? throw new ArgumentNullException(nameof(mailService));
         }
-        
+
         [HttpGet]
         public IActionResult GetPointsOfInterest(int cityId)
         {
@@ -40,7 +38,7 @@ namespace CityInfo.API.Controllers
 
 
                 return Ok(city.PointsOfInterest);
-            } 
+            }
             catch (Exception ex)
             {
                 _logger.LogCritical($"Exception while getting points of interest for city with id {cityId}.", ex);
@@ -69,7 +67,7 @@ namespace CityInfo.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreatePointOfInterest(int cityId, 
+        public IActionResult CreatePointOfInterest(int cityId,
             [FromBody] PointOfInterestForCreationDto pointOfInterest)
         {
             if (pointOfInterest.Name == pointOfInterest.Description)
@@ -103,7 +101,7 @@ namespace CityInfo.API.Controllers
             };
 
             city.PointsOfInterest.Add(finalPointOfInterset);
-            return CreatedAtRoute("GetPointOfInterst", new { cityId, id = finalPointOfInterset.Id}, finalPointOfInterset);
+            return CreatedAtRoute("GetPointOfInterst", new { cityId, id = finalPointOfInterset.Id }, finalPointOfInterset);
         }
 
 
@@ -142,7 +140,7 @@ namespace CityInfo.API.Controllers
             return NoContent();
 
         }
-        
+
 
         [HttpPatch("{id}")]
         public IActionResult PatchPointOfInterest(int cityId, int id,
