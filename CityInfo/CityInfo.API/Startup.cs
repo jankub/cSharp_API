@@ -37,6 +37,7 @@ namespace CityInfo.API
                      castedResolver.NamingStrategy = null;
                  }
              });*/
+             
 #if DEBUG
             services.AddTransient<IMailService, LocalMailService>();
 #else
@@ -48,6 +49,8 @@ namespace CityInfo.API
             {
                 o.UseSqlServer(connectionString);
             });
+
+            services.AddScoped<ICityInfoRepository, CityInfoRepository>();
         }
 
 
