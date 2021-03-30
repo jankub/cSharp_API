@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using CityInfo.API.Entities;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
 using Microsoft.AspNetCore.JsonPatch;
@@ -84,26 +85,20 @@ namespace CityInfo.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
 
-            if (city == null)
+            if (!_cityInfoRepository.CityExists(cityId))
             {
                 return NotFound();
             }
 
-            //to be improved
-            var maxPointOfInterstId = CitiesDataStore.Current.Cities.SelectMany(
-                c => c.PointsOfInterest).Max(p => p.Id);
+            var finalPointOfInterest = _mapper.Map<PointOfInterest>(pointOfInterest);
 
-            var finalPointOfInterset = new PointOfInterestDto()
-            {
-                Id = ++maxPointOfInterstId,
-                Name = pointOfInterest.Name,
-                Description = pointOfInterest.Description
-            };
+            _cityInfoRepository.AddPointOfInterestForCity(cityId, finalPointOfInterest);
 
-            city.PointsOfInterest.Add(finalPointOfInterset);
-            return CreatedAtRoute("GetPointOfInterst", new { cityId, id = finalPointOfInterset.Id }, finalPointOfInterset);
+            _cityInfoRepository.Save();
+
+            var createdPointOfInterst = _mapper.Map<PointOfInterestDto>(finalPointOfInterest);
+            return CreatedAtRoute("GetPointOfInterst", new { cityId, id = createdPointOfInterst.Id }, createdPointOfInterst);
         }
 
 
