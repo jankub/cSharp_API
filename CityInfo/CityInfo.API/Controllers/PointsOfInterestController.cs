@@ -118,21 +118,20 @@ namespace CityInfo.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-
-            if (city == null)
+            if (!_cityInfoRepository.CityExists(cityId))
             {
                 return NotFound();
             }
 
-            var pointOfInterstFromStore = city.PointsOfInterest.FirstOrDefault(p => p.Id == id);
-            if (pointOfInterstFromStore == null)
+            var pointOfInterstEntity = _cityInfoRepository.GetPointOfInterestForCity(cityId, id);
+            if (pointOfInterstEntity == null)
             {
                 return NotFound();
             }
 
-            pointOfInterstFromStore.Name = pointOfInterest.Name;
-            pointOfInterstFromStore.Description = pointOfInterest.Description;
+            _mapper.Map(pointOfInterest, pointOfInterstEntity);
+            _cityInfoRepository.UpdatePointOfInterestForCity(cityId, pointOfInterstEntity);
+            _cityInfoRepository.Save();
 
             return NoContent();
 
@@ -143,24 +142,20 @@ namespace CityInfo.API.Controllers
         public IActionResult PatchPointOfInterest(int cityId, int id,
             [FromBody] JsonPatchDocument<PointOfInterestForUpdateDto> patchDoc)
         {
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-            if (city == null)
+           
+            if (!_cityInfoRepository.CityExists(cityId))
             {
                 return NotFound();
             }
 
-            var pointOfInterstFromStore = city.PointsOfInterest.FirstOrDefault(p => p.Id == id);
-            if (pointOfInterstFromStore == null)
+            var pointOfInterstEntity = _cityInfoRepository.GetPointOfInterestForCity(cityId, id);
+            if (pointOfInterstEntity == null)
             {
                 return NotFound();
             }
 
-            var pointOfInterestToPatch =
-                new PointOfInterestForUpdateDto()
-                {
-                    Name = pointOfInterstFromStore.Name,
-                    Description = pointOfInterstFromStore.Description
-                };
+            var pointOfInterestToPatch = _mapper.Map<PointOfInterestForUpdateDto>(pointOfInterstEntity);
+     
             patchDoc.ApplyTo(pointOfInterestToPatch, ModelState);
 
             if (!ModelState.IsValid)
@@ -181,31 +176,33 @@ namespace CityInfo.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            pointOfInterstFromStore.Name = pointOfInterestToPatch.Name;
-            pointOfInterstFromStore.Description = pointOfInterestToPatch.Description;
+            _mapper.Map(pointOfInterestToPatch, pointOfInterstEntity);
+            _cityInfoRepository.UpdatePointOfInterestForCity(cityId, pointOfInterstEntity);
+            _cityInfoRepository.Save();
 
             return NoContent();
         }
 
+
         [HttpDelete("{id}")]
         public IActionResult DeletePointOfInterest(int cityId, int id)
         {
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-            if (city == null)
+            if (!_cityInfoRepository.CityExists(cityId))
             {
                 return NotFound();
             }
 
-            var pointOfInterstFromStore = city.PointsOfInterest.FirstOrDefault(p => p.Id == id);
-            if (pointOfInterstFromStore == null)
+            var pointOfInterstEntity = _cityInfoRepository.GetPointOfInterestForCity(cityId, id);
+            if (pointOfInterstEntity == null)
             {
                 return NotFound();
             }
 
-            city.PointsOfInterest.Remove(pointOfInterstFromStore);
-
+            _cityInfoRepository.RemovePointOfInterest(pointOfInterstEntity);
+            _cityInfoRepository.Save();
+                
             _mailService.Send("Point of interest deleted",
-                $"Point of interest {pointOfInterstFromStore.Name} with id {pointOfInterstFromStore.Id} was removed.");
+                $"Point of interest {pointOfInterstEntity.Name} with id {pointOfInterstEntity.Id} was removed.");
 
             return NoContent();
         }
