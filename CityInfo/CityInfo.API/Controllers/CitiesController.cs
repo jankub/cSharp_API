@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using CityInfo.API.Entities;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
@@ -13,11 +14,15 @@ namespace CityInfo.API.Controllers
     public class CitiesController : ControllerBase
     {
         private readonly ICityInfoRepository _cityInfoRepository;
+        private readonly IMapper _mapper;
 
-        public CitiesController(ICityInfoRepository cityInfoRepository)
+        public CitiesController(ICityInfoRepository cityInfoRepository,
+            IMapper mapper)
         {
             _cityInfoRepository = cityInfoRepository ??
                 throw new ArgumentNullException(nameof(cityInfoRepository));
+            _mapper = mapper ??
+                throw new ArgumentNullException(nameof(mapper));
         }
 
 
@@ -26,20 +31,20 @@ namespace CityInfo.API.Controllers
         {
             var cityEntities = _cityInfoRepository.GetCities();
 
-            var result = new List<CityWithoutPointsOfInterestDto>();
+            //var result = new List<CityWithoutPointsOfInterestDto>();
 
-            foreach (var cityEntity in cityEntities)
-            {
-                result.Add(
-                    new CityWithoutPointsOfInterestDto
-                    {
-                        Id = cityEntity.Id,
-                        Name = cityEntity.Name,
-                        Description = cityEntity.Description
-                    });
-            }
+            //foreach (var cityEntity in cityEntities)
+            //{
+            //    result.Add(
+            //        new CityWithoutPointsOfInterestDto
+            //        {
+            //            Id = cityEntity.Id,
+            //            Name = cityEntity.Name,
+            //            Description = cityEntity.Description
+            //        });
+            //}
 
-            return Ok(result);
+            return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities));
         }
 
         [HttpGet("{id}")]
@@ -55,34 +60,10 @@ namespace CityInfo.API.Controllers
 
             if (includePointsOfInterest)
             {
-                var cityResult = new CityDto()
-                {
-                    Id = city.Id,
-                    Name = city.Name,
-                    Description = city.Description,
-                };
-
-                foreach (var pointOfInterest in city.PointsOfInterest)
-                {
-                    cityResult.PointsOfInterest.Add(new PointOfInterestDto()
-                    {
-                        Id = pointOfInterest.Id,
-                        Name = pointOfInterest.Name,
-                        Description = pointOfInterest.Description
-                    });
-                }
-
-                return Ok(cityResult);
+                return Ok(_mapper.Map<CityDto>(city));
             }
 
-            var cityWithoutPointsOfInterest = new CityWithoutPointsOfInterestDto()
-            {
-                Id = city.Id,
-                Name = city.Name,
-                Description = city.Description
-            };
-
-            return Ok(cityWithoutPointsOfInterest);
+            return Ok(_mapper.Map<CityWithoutPointsOfInterestDto>(city));
 
         }
     }
