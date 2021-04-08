@@ -16,6 +16,7 @@ namespace CityInfo.Tests
     public class CityControllerShould : ControllerBase
     {
         [Fact]
+        [Trait("Method", "GetCities")]
         public void ReturnHttpCode200AndCitiesInBodyWhenGetCitiesCalled()
         {
             //Arrange
@@ -42,6 +43,7 @@ namespace CityInfo.Tests
 
         
         [Fact]
+        [Trait("Method", "GetCity")]
         public void ReturnHttpNoFoundWhenNoCityFound()
         {
             //Arrange
@@ -65,6 +67,7 @@ namespace CityInfo.Tests
         }
 
         [Fact]
+        [Trait("Method", "GetCity")]
         public void ReturnOkResultAndOneCityWithPoI()
         {
             //Arrange
@@ -92,6 +95,7 @@ namespace CityInfo.Tests
         }
 
         [Fact]
+        [Trait("Method", "GetCity")]
         public void ReturnOkResultAndOneCityWithoutPoI()
         {
             //Arrange
