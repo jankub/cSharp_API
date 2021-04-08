@@ -10,12 +10,20 @@ using CityInfo.API.Models;
 using AutoMapper;
 using CityInfo.API.Entities;
 using CityInfo.API.Controllers;
+using Xunit.Abstractions;
 
 namespace CityInfo.Tests
 {
-    public class CityControllerShould : ControllerBase
+    public class CityControllerShould
     {
-        [Fact]
+        private readonly ITestOutputHelper _output;
+
+        public CityControllerShould(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
+        [Fact(Skip = "skip testing")]
         [Trait("Method", "GetCities")]
         public void ReturnHttpCode200AndCitiesInBodyWhenGetCitiesCalled()
         {
@@ -47,6 +55,7 @@ namespace CityInfo.Tests
         public void ReturnHttpNoFoundWhenNoCityFound()
         {
             //Arrange
+            _output.WriteLine("arranging");
             var configMapper = new MapperConfiguration(cfg => {
                 cfg.CreateMap<City, CityWithoutPointsOfInterestDto>();
             });
