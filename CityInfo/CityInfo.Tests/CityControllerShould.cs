@@ -11,28 +11,20 @@ using AutoMapper;
 using CityInfo.API.Entities;
 using CityInfo.API.Controllers;
 using Xunit.Abstractions;
+using CityInfo.UnitTests;
 
 namespace CityInfo.Tests
 {
-    public class CityControllerShould
+    public class CityControllerShould : IClassFixture<TestFixture>
     {
         private readonly ITestOutputHelper _output;
+        private readonly TestFixture _testFixture;
 
-        private readonly IMapper _mapper;
-
-        public CityControllerShould(ITestOutputHelper output)
+        public CityControllerShould(TestFixture fixture,
+            ITestOutputHelper outHelper)
         {
-            _output = output;
-
-            var configMapper = new MapperConfiguration(cfg => {
-                cfg.CreateMap<CityDto, City>();
-                cfg.CreateMap<City, CityDto>();
-                cfg.CreateMap<City, CityWithoutPointsOfInterestDto>();
-                cfg.CreateMap<CityWithoutPointsOfInterestDto, City>();
-                cfg.CreateMap<PointOfInterest, PointOfInterestDto>();
-                cfg.CreateMap<PointOfInterestDto, PointOfInterest>();
-            });
-            _mapper = configMapper.CreateMapper();
+            _testFixture = fixture;
+            _output = outHelper;
         }
 
         [Fact(Skip = "skip testing")]
@@ -43,8 +35,8 @@ namespace CityInfo.Tests
             var mockRepo = new Mock<ICityInfoRepository>();
             
             mockRepo.Setup(repo => repo.GetCities()).Returns(GetCities());
-            var controlerUT = new CitiesController(mockRepo.Object, _mapper); 
-
+            var controlerUT = new CitiesController(mockRepo.Object, _testFixture.Mapper);
+            
             //Act
             var result = controlerUT.GetCities();
 
@@ -63,13 +55,12 @@ namespace CityInfo.Tests
         public void ReturnHttpNoFoundWhenNoCityFound()
         {
             //Arrange
-            _output.WriteLine("arranging");
-
+            _output.WriteLine(_testFixture.Mapper.GetHashCode().ToString());
             var mockRepo = new Mock<ICityInfoRepository>();
             City city = null;
             mockRepo.Setup(repo => repo.GetCity(It.IsAny<int>(), It.IsAny<bool>())).Returns(city);
 
-            var controlerUT = new CitiesController(mockRepo.Object, _mapper);
+            var controlerUT = new CitiesController(mockRepo.Object, _testFixture.Mapper);
 
             //Act
             var result = controlerUT.GetCity(4, true);
@@ -84,11 +75,12 @@ namespace CityInfo.Tests
         public void ReturnOkResultAndOneCityWithPoI()
         {
             //Arrange
+            _output.WriteLine(_testFixture.Mapper.GetHashCode().ToString());        
             var mockRepo = new Mock<ICityInfoRepository>();
-            City city = _mapper.Map<City>(CitiesDataStore.Current.Cities[0]);
+            City city = _testFixture.Mapper.Map<City>(CitiesDataStore.Current.Cities[0]);
             mockRepo.Setup(repo => repo.GetCity(It.IsAny<int>(), true)).Returns(city);
 
-            var controlerUT = new CitiesController(mockRepo.Object, _mapper);
+            var controlerUT = new CitiesController(mockRepo.Object, _testFixture.Mapper);
 
             //Act
             var result = controlerUT.GetCity(1, true);
@@ -104,11 +96,12 @@ namespace CityInfo.Tests
         public void ReturnOkResultAndOneCityWithoutPoI()
         {
             //Arrange
+            _output.WriteLine(_testFixture.Mapper.GetHashCode().ToString());
             var mockRepo = new Mock<ICityInfoRepository>();
-            City city = _mapper.Map<City>(CitiesDataStore.Current.Cities[0]);
+            City city = _testFixture.Mapper.Map<City>(CitiesDataStore.Current.Cities[0]);
             mockRepo.Setup(repo => repo.GetCity(It.IsAny<int>(), false)).Returns(city);
 
-            var controlerUT = new CitiesController(mockRepo.Object, _mapper);
+            var controlerUT = new CitiesController(mockRepo.Object, _testFixture.Mapper);
 
             //Act
             var result = controlerUT.GetCity(1, false);
