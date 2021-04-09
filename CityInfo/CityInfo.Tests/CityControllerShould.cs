@@ -18,24 +18,32 @@ namespace CityInfo.Tests
     {
         private readonly ITestOutputHelper _output;
 
+        private readonly IMapper _mapper;
+
         public CityControllerShould(ITestOutputHelper output)
         {
             _output = output;
+
+            var configMapper = new MapperConfiguration(cfg => {
+                cfg.CreateMap<CityDto, City>();
+                cfg.CreateMap<City, CityDto>();
+                cfg.CreateMap<City, CityWithoutPointsOfInterestDto>();
+                cfg.CreateMap<CityWithoutPointsOfInterestDto, City>();
+                cfg.CreateMap<PointOfInterest, PointOfInterestDto>();
+                cfg.CreateMap<PointOfInterestDto, PointOfInterest>();
+            });
+            _mapper = configMapper.CreateMapper();
         }
 
         [Fact(Skip = "skip testing")]
         [Trait("Method", "GetCities")]
         public void ReturnHttpCode200AndCitiesInBodyWhenGetCitiesCalled()
         {
-            //Arrange
-            var configMapper = new MapperConfiguration(cfg => {          
-                cfg.CreateMap<City, CityWithoutPointsOfInterestDto> ();
-            });
-            IMapper mapper = configMapper.CreateMapper();
+            //Arrange       
             var mockRepo = new Mock<ICityInfoRepository>();
             
             mockRepo.Setup(repo => repo.GetCities()).Returns(GetCities());
-            var controlerUT = new CitiesController(mockRepo.Object, mapper); 
+            var controlerUT = new CitiesController(mockRepo.Object, _mapper); 
 
             //Act
             var result = controlerUT.GetCities();
@@ -56,16 +64,12 @@ namespace CityInfo.Tests
         {
             //Arrange
             _output.WriteLine("arranging");
-            var configMapper = new MapperConfiguration(cfg => {
-                cfg.CreateMap<City, CityWithoutPointsOfInterestDto>();
-            });
-            IMapper mapper = configMapper.CreateMapper();
 
             var mockRepo = new Mock<ICityInfoRepository>();
             City city = null;
             mockRepo.Setup(repo => repo.GetCity(It.IsAny<int>(), It.IsAny<bool>())).Returns(city);
 
-            var controlerUT = new CitiesController(mockRepo.Object, mapper);
+            var controlerUT = new CitiesController(mockRepo.Object, _mapper);
 
             //Act
             var result = controlerUT.GetCity(4, true);
@@ -80,19 +84,11 @@ namespace CityInfo.Tests
         public void ReturnOkResultAndOneCityWithPoI()
         {
             //Arrange
-            var configMapper = new MapperConfiguration(cfg => {
-                cfg.CreateMap<CityDto, City>();
-                cfg.CreateMap<City, CityDto>();
-                cfg.CreateMap<PointOfInterest, PointOfInterestDto>();
-                cfg.CreateMap<PointOfInterestDto, PointOfInterest>();
-            });
-            IMapper mapper = configMapper.CreateMapper();
-
             var mockRepo = new Mock<ICityInfoRepository>();
-            City city = mapper.Map<City>(CitiesDataStore.Current.Cities[0]);
+            City city = _mapper.Map<City>(CitiesDataStore.Current.Cities[0]);
             mockRepo.Setup(repo => repo.GetCity(It.IsAny<int>(), true)).Returns(city);
 
-            var controlerUT = new CitiesController(mockRepo.Object, mapper);
+            var controlerUT = new CitiesController(mockRepo.Object, _mapper);
 
             //Act
             var result = controlerUT.GetCity(1, true);
@@ -108,21 +104,11 @@ namespace CityInfo.Tests
         public void ReturnOkResultAndOneCityWithoutPoI()
         {
             //Arrange
-            var configMapper = new MapperConfiguration(cfg => {
-                cfg.CreateMap<CityDto, City>();
-                cfg.CreateMap<City, CityDto>();
-                cfg.CreateMap<City, CityWithoutPointsOfInterestDto>();
-                cfg.CreateMap<CityWithoutPointsOfInterestDto, City>();
-                cfg.CreateMap<PointOfInterest, PointOfInterestDto>();
-                cfg.CreateMap<PointOfInterestDto, PointOfInterest>();
-            });
-            IMapper mapper = configMapper.CreateMapper();
-
             var mockRepo = new Mock<ICityInfoRepository>();
-            City city = mapper.Map<City>(CitiesDataStore.Current.Cities[0]);
+            City city = _mapper.Map<City>(CitiesDataStore.Current.Cities[0]);
             mockRepo.Setup(repo => repo.GetCity(It.IsAny<int>(), false)).Returns(city);
 
-            var controlerUT = new CitiesController(mockRepo.Object, mapper);
+            var controlerUT = new CitiesController(mockRepo.Object, _mapper);
 
             //Act
             var result = controlerUT.GetCity(1, false);
